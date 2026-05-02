@@ -1,0 +1,23 @@
+[build]
+  command = "node scripts/generate-env.js"
+  publish = "."
+  functions = "netlify/functions"
+
+# Route /api/verify-vote to the Netlify function
+[[redirects]]
+  from = "/api/verify-vote"
+  to = "/.netlify/functions/verify-vote"
+  status = 200
+  force = true
+
+# Serve Admin pages correctly
+[[redirects]]
+  from = "/Admin"
+  to = "/Admin/login.html"
+  status = 200
+
+# Fallback — serve index.html for unknown routes (SPA-style)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404

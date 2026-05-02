@@ -1,0 +1,1636 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Wellspring Student Week 2026</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0066CC",
+              secondary: "#0052A3",
+              accent: "#004D99",
+              deep: "#F8F9FA",
+              surface: "#FFFFFF",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+
+    <style>
+      /* Sidebar toggle overlay */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.25);
+        z-index: 39;
+        transition: opacity 0.3s;
+      }
+      .sidebar-open .sidebar-overlay {
+        display: block;
+      }
+      .sidebar {
+        left: 0;
+        transition: transform 0.3s;
+      }
+      .sidebar-closed {
+        transform: translateX(-100%);
+      }
+      @media (max-width: 1024px) {
+        .sidebar {
+          position: fixed !important;
+          z-index: 40;
+          height: 100vh;
+          top: 0;
+          left: 0;
+          width: 16rem;
+          min-width: 0;
+        }
+        .ml-64 {
+          margin-left: 0 !important;
+        }
+        .sidebar-toggle-btn {
+          display: inline-flex !important;
+        }
+      }
+      .sidebar-toggle-btn {
+        display: none;
+        position: fixed;
+        top: 1.5rem;
+        left: 1.5rem;
+        z-index: 50;
+        background: #fff;
+        border: 2px solid #e8eef7;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.7rem;
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #0066cc;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+      .sidebar-toggle-btn:hover {
+        background: #f0f4f9;
+        color: #0052a3;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #f5f7fb 0%, #e9ecf1 100%);
+        color: #1a1a1a;
+        min-height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        color: #0a1628;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: #ffffff;
+        border-right: 2px solid #e8eef7;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.08);
+      }
+
+      .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        margin: 0.25rem 1rem;
+        border-radius: 0.5rem;
+      }
+
+      .sidebar-nav-link:hover,
+      .sidebar-nav-link.active {
+        border-left-color: #0066cc;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 102, 204, 0.08),
+          rgba(0, 82, 163, 0.05)
+        );
+        color: #0066cc;
+        transform: translateX(4px);
+      }
+
+      /* Stats cards */
+      .stat-card {
+        background: #ffffff;
+        border: 1px solid #e8eef7;
+        border-radius: 1rem;
+        padding: 1.75rem;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      .stat-card:hover {
+        border-color: #0066cc;
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 102, 204, 0.12);
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #0066cc;
+        margin-top: 0.5rem;
+        letter-spacing: -1px;
+      }
+
+      /* Form inputs */
+      input,
+      textarea,
+      select {
+        background: #f8f9fc !important;
+        border: 2px solid #e8eef7 !important;
+        color: #1a1a1a !important;
+        border-radius: 0.75rem !important;
+        padding: 0.85rem 1rem !important;
+        font-family: "Inter", sans-serif !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none !important;
+        border-color: #0066cc !important;
+        background: #ffffff !important;
+        box-shadow:
+          0 0 0 4px rgba(0, 102, 204, 0.1),
+          0 0 0 1px rgba(0, 102, 204, 0.3) !important;
+      }
+
+      input::placeholder {
+        color: #a0aec0 !important;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      /* Form Group */
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #0a1628;
+        font-size: 0.95rem;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: linear-gradient(135deg, #0066cc, #0052a3);
+        color: white;
+        padding: 0.85rem 1.75rem;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
+        background: linear-gradient(135deg, #0052a3, #004d99);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ff6b6b, #e63946);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(230, 57, 70, 0.2);
+      }
+
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(230, 57, 70, 0.3);
+        background: linear-gradient(135deg, #e63946, #d62828);
+      }
+
+      .btn-danger:active {
+        transform: translateY(0);
+      }
+
+      /* Modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-backdrop.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        background: #ffffff;
+        border: 2px solid #e8eef7;
+        border-radius: 1.25rem;
+        padding: 2.5rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 20px 60px rgba(0, 102, 204, 0.15);
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-content h2 {
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: linear-gradient(135deg, #f8f9fc 0%, #f0f4f9 100%);
+        color: #0066cc;
+        padding: 1.25rem;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e8eef7;
+      }
+
+      td {
+        padding: 1.25rem;
+        border-bottom: 1px solid #e8eef7;
+      }
+
+      tr:hover {
+        background: rgba(0, 102, 204, 0.04);
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 1.25rem 1.75rem;
+        border-radius: 0.75rem;
+        background: linear-gradient(135deg, #0066cc, #0052a3);
+        color: white;
+        z-index: 1001;
+        animation: slideInRight 0.3s ease;
+        box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        font-weight: 600;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Header */
+      header {
+        background: #ffffff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #e8eef7;
+      }
+
+      header h1 {
+        font-size: 1.75rem;
+      }
+
+      /* Main content */
+      .section-content {
+        animation: fadeIn 0.3s ease;
+      }
+
+      .section-content.hidden {
+        display: none;
+      }
+
+      /* Charts container */
+      .chart-container {
+        background: #ffffff;
+        border-radius: 1rem;
+        padding: 2rem;
+        border: 1px solid #e8eef7;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      .chart-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+      }
+
+      /* Categories list styling */
+      #categoriesList .stat-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      #categoriesList .stat-card p {
+        margin: 0;
+      }
+
+      #categoriesList .stat-card p:first-child {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      #categoriesList .stat-card p:last-child {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      /* Filter styling */
+      #filterCategory,
+      #candidateCategory {
+        width: 100%;
+      }
+
+      /* Image in table */
+      td img {
+        border-radius: 0.5rem;
+        border: 1px solid #e8eef7;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Toggle Button -->
+    <button
+      class="sidebar-toggle-btn"
+      id="sidebarToggleBtn"
+      aria-label="Open sidebar"
+    >
+      <i class="ri-menu-line"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside
+      class="sidebar fixed left-0 top-0 w-64 h-screen overflow-y-auto z-40 sidebar-closed"
+      id="sidebar"
+    >
+      <div class="p-6 border-b border-primary border-opacity-20">
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+          "
+        >
+          <img
+            src="../WELSU LOGO.webp"
+            alt="Wellspring University Logo"
+            style="
+              height: 2.5rem;
+              width: auto;
+              display: block;
+              border-radius: 0.5rem;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            "
+          />
+          <span
+            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary"
+            >Admin Portal</span
+          >
+        </div>
+        <p class="text-xs text-text-muted mt-1">Student Week 2026</p>
+      </div>
+
+      <nav class="mt-8">
+        <a
+          href="#dashboard"
+          class="sidebar-nav-link active"
+          onclick="showSection(event, 'dashboard')"
+        >
+          <i class="ri-dashboard-line text-lg"></i> Dashboard
+        </a>
+        <a
+          href="#categories"
+          class="sidebar-nav-link"
+          onclick="showSection(event, 'categories')"
+        >
+          <i class="ri-layout-grid-line text-lg"></i> Add Category
+        </a>
+        <a
+          href="#candidates"
+          class="sidebar-nav-link"
+          onclick="showSection(event, 'candidates')"
+        >
+          <i class="ri-user-add-line text-lg"></i> Add Candidate
+        </a>
+        <a
+          href="#manage"
+          class="sidebar-nav-link"
+          onclick="showSection(event, 'manage')"
+        >
+          <i class="ri-team-line text-lg"></i> Manage Candidates
+        </a>
+        <a
+          href="#results"
+          class="sidebar-nav-link"
+          onclick="showSection(event, 'results')"
+        >
+          <i class="ri-bar-chart-line text-lg"></i> View Results
+        </a>
+        <a href="#settings" class="sidebar-nav-link" onclick="openSettings()">
+          <i class="ri-settings-line text-lg"></i> Settings
+        </a>
+        <button
+          onclick="logout()"
+          class="sidebar-nav-link w-full text-left"
+          style="
+            margin-top: auto;
+            border: none;
+            background: none;
+            cursor: pointer;
+          "
+        >
+          <i class="ri-logout-box-line text-lg"></i> Logout
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 min-h-screen bg-deep" id="mainContent">
+      <!-- Header -->
+      <header
+        class="bg-surface border-b border-primary border-opacity-20 p-6 flex justify-between items-center sticky top-0 z-30"
+      >
+        <h1 class="text-2xl font-bold">Student Week Admin Dashboard</h1>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-text-muted">Welcome, Admin</span>
+          <button onclick="logout()" class="btn-primary text-sm">
+            <i class="ri-logout-line"></i> Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Sections -->
+      <div class="p-8">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section-content">
+          <h2 class="text-3xl font-bold mb-8">Dashboard Overview</h2>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          >
+            <div class="stat-card">
+              <p class="text-text-muted text-sm flex items-center gap-2">
+                <i class="ri-ballot-line"></i> Total Votes
+              </p>
+              <p class="stat-value" id="totalVotes">0</p>
+            </div>
+            <div class="stat-card">
+              <p class="text-text-muted text-sm flex items-center gap-2">
+                <i class="ri-layout-grid-line"></i> Total Categories
+              </p>
+              <p class="stat-value" id="totalCategories">0</p>
+            </div>
+            <div class="stat-card">
+              <p class="text-text-muted text-sm flex items-center gap-2">
+                <i class="ri-user-line"></i> Total Candidates
+              </p>
+              <p class="stat-value" id="totalCandidates">0</p>
+            </div>
+            <div class="stat-card">
+              <p class="text-text-muted text-sm flex items-center gap-2">
+                <i class="ri-funds-line"></i> Total Revenue
+              </p>
+              <p class="stat-value" id="totalRevenue">₦0</p>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="grid grid-cols-1 gap-8">
+            <div class="stat-card">
+              <h3 class="text-xl font-bold mb-6">Top Candidates</h3>
+              <div id="topCandidatesChart" style="height: 300px"></div>
+            </div>
+          </div>
+
+          <div class="stat-card mt-8 overflow-x-auto">
+            <h3 class="text-xl font-bold mb-4">Recent Vote Transactions</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Reference</th>
+                  <th>Candidate</th>
+                  <th>Votes</th>
+                  <th>Amount (₦)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsTable">
+                <tr>
+                  <td colspan="6" class="text-center text-text-muted">
+                    No transactions yet
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Add Category Section -->
+        <section id="categories" class="section-content hidden">
+          <h2 class="text-3xl font-bold mb-8">Add New Category</h2>
+
+          <div class="stat-card max-w-2xl mb-8">
+            <form id="categoryForm" class="space-y-4">
+              <div class="form-group">
+                <label for="categoryName">Category Name</label>
+                <input
+                  type="text"
+                  id="categoryName"
+                  placeholder="e.g. Miss Freshers 2025"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="categoryOrder">Display Order</label>
+                <input
+                  type="number"
+                  id="categoryOrder"
+                  min="1"
+                  value="1"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn-primary w-full">
+                <i class="ri-add-line"></i> Add Category
+              </button>
+            </form>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4 mt-8">Existing Categories</h3>
+          <div id="categoriesList" class="space-y-2">
+            <!-- Categories will be listed here -->
+          </div>
+        </section>
+
+        <!-- Add Candidate Section -->
+        <section id="candidates" class="section-content hidden">
+          <h2 class="text-3xl font-bold mb-8">Add New Candidate</h2>
+
+          <div class="stat-card max-w-2xl">
+            <form id="candidateForm" class="space-y-4">
+              <div class="form-group">
+                <label for="candidateName">Candidate Name</label>
+                <input
+                  type="text"
+                  id="candidateName"
+                  placeholder="Full name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="candidatePhoto">Photo Path</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center">
+                  <input
+                    type="text"
+                    id="candidatePhoto"
+                    placeholder="IMG/candidate-name.jpeg"
+                    required
+                    style="flex: 1"
+                  />
+                  <select
+                    id="photoExtension"
+                    style="width: auto; flex-shrink: 0"
+                  >
+                    <option value="jpeg">.jpeg</option>
+                    <option value="jpg">.jpg</option>
+                    <option value="png">.png</option>
+                  </select>
+                </div>
+                <p class="text-xs" style="color: #64748b; margin-top: 0.35rem">
+                  Place the image in the <strong>IMG/</strong> folder named
+                  after the candidate, pick the correct extension, then confirm
+                  the path above.
+                </p>
+              </div>
+              <div class="form-group">
+                <label for="candidateCategory">Category</label>
+                <select id="candidateCategory" required>
+                  <option value="">Select a category</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-primary w-full">
+                <i class="ri-add-line"></i> Add Candidate
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Manage Candidates Section -->
+        <section id="manage" class="section-content hidden">
+          <h2 class="text-3xl font-bold mb-8">Manage Candidates</h2>
+
+          <div class="mb-8">
+            <div class="form-group">
+              <label for="filterCategory">Filter by Category</label>
+              <select id="filterCategory">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stat-card overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Votes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="candidatesTable">
+                <!-- Candidates will be listed here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="section-content hidden">
+          <h2 class="text-3xl font-bold mb-8">Voting Results</h2>
+
+          <div id="categoryResultsContainer" class="space-y-8">
+            <!-- Category charts will be added here -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+
+    <!-- Edit Votes Modal -->
+    <div class="modal-backdrop" id="editVotesModal">
+      <div class="modal-content" style="max-width:400px;">
+        <div class="flex justify-between items-center mb-6">
+          <h2 style="font-size:1.25rem;">Edit Vote Count</h2>
+          <button onclick="closeEditVotes()" class="text-gray-400 hover:text-primary text-2xl font-light">×</button>
+        </div>
+
+        <p style="font-size:0.9rem;color:#64748b;margin-bottom:1.25rem;">
+          Candidate: <strong id="editVotesName" style="color:#0066cc;"></strong>
+        </p>
+
+        <div class="form-group">
+          <label for="editVotesInput">Number of Votes</label>
+          <input type="number" id="editVotesInput" min="0" value="0" />
+        </div>
+
+        <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+          <button onclick="saveEditVotes()" class="btn-primary" style="flex:1;">
+            <i class="ri-save-line"></i> Save
+          </button>
+          <button onclick="closeEditVotes()"
+            style="flex:1;padding:0.85rem 1.75rem;border:2px solid #e8eef7;border-radius:0.75rem;font-weight:600;cursor:pointer;background:#fff;color:#64748b;">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2>Settings</h2>
+          <button
+            onclick="closeSettings()"
+            class="text-gray-400 hover:text-primary text-2xl font-light"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="settingsForm" class="space-y-4">
+          <div class="form-group">
+            <label for="votePrice">Price per Vote (₦)</label>
+            <input type="number" id="votePrice" min="1" value="200" required />
+          </div>
+
+          <div class="form-group">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <span>Voting Status</span>
+              <input
+                type="checkbox"
+                id="votingOpen"
+                checked
+                style="
+                  width: 1.3rem;
+                  height: 1.3rem;
+                  cursor: pointer;
+                  accent-color: #0066cc;
+                "
+              />
+            </label>
+            <span id="votingStatus" class="text-sm text-green-600 font-500 mt-2"
+              >Voting is OPEN</span
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <span>Show Vote Counts on Voting Page</span>
+              <input
+                type="checkbox"
+                id="voteCountVisible"
+                checked
+                style="
+                  width: 1.3rem;
+                  height: 1.3rem;
+                  cursor: pointer;
+                  accent-color: #0066cc;
+                "
+              />
+            </label>
+            <span
+              id="voteCountVisibilityStatus"
+              class="text-sm text-green-600 font-500 mt-2"
+              >Vote counts are VISIBLE</span
+            >
+          </div>
+
+          <button type="submit" class="btn-primary w-full">
+            <i class="ri-save-line"></i> Save Settings
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="./env.js"></script>
+    <script src="./firebase-init.js"></script>
+
+    <script>
+      // Sidebar toggle logic
+      const sidebar = document.getElementById("sidebar");
+      const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+      const sidebarOverlay = document.getElementById("sidebarOverlay");
+      const mainContent = document.getElementById("mainContent");
+
+      function openSidebar() {
+        sidebar.classList.remove("sidebar-closed");
+        document.body.classList.add("sidebar-open");
+      }
+      function closeSidebar() {
+        sidebar.classList.add("sidebar-closed");
+        document.body.classList.remove("sidebar-open");
+      }
+      sidebarToggleBtn.addEventListener("click", openSidebar);
+      sidebarOverlay.addEventListener("click", closeSidebar);
+
+      // Close sidebar on nav click (mobile)
+      sidebar.querySelectorAll("a,button").forEach((el) => {
+        el.addEventListener("click", () => {
+          if (window.innerWidth <= 1024) closeSidebar();
+        });
+      });
+
+      // Open sidebar by default on desktop, closed on mobile
+      function handleSidebarOnResize() {
+        if (window.innerWidth > 1024) {
+          sidebar.classList.remove("sidebar-closed");
+          document.body.classList.remove("sidebar-open");
+        } else {
+          sidebar.classList.add("sidebar-closed");
+        }
+      }
+      window.addEventListener("resize", handleSidebarOnResize);
+      document.addEventListener("DOMContentLoaded", handleSidebarOnResize);
+      // State
+      let categories = [];
+      let candidates = [];
+      let votePrice = 200;
+      let votingOpen = true;
+      let voteCountVisible = true;
+      let successfulRevenueKobo = 0;
+      const DEFAULT_ADMIN_EMAIL = "admin@gmail.com";
+
+      // DOM Elements
+      const categoryForm = document.getElementById("categoryForm");
+      const candidateForm = document.getElementById("candidateForm");
+      const settingsForm = document.getElementById("settingsForm");
+
+      async function isAuthorizedAdmin(user) {
+        if (!user) return false;
+
+        if ((user.email || "").toLowerCase() === DEFAULT_ADMIN_EMAIL) {
+          return true;
+        }
+
+        try {
+          const adminDoc = await db.collection("admins").doc(user.uid).get();
+          return adminDoc.exists;
+        } catch (error) {
+          console.error("Error checking admin access:", error);
+          return false;
+        }
+      }
+
+      // Auth Guard
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const isAdmin = await isAuthorizedAdmin(user);
+        if (!isAdmin) {
+          await auth.signOut();
+          window.location.href = "login.html";
+        }
+      });
+
+      // Toast
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.style.background = type === "error" ? "#FF6B35" : "#00C9A7";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      function formatCandidateFileName(name) {
+        return (name || "candidate")
+          .replace(/[\\/:*?"<>|]+/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      // Section Management
+      function showSection(event, sectionId) {
+        document
+          .querySelectorAll(".section-content")
+          .forEach((el) => el.classList.add("hidden"));
+        document.getElementById(sectionId).classList.remove("hidden");
+
+        document
+          .querySelectorAll(".sidebar-nav-link")
+          .forEach((el) => el.classList.remove("active"));
+        event.currentTarget.classList.add("active");
+
+        if (sectionId === "results") {
+          setTimeout(renderResultsCharts, 100);
+        }
+      }
+
+      // Settings Modal
+      function openSettings() {
+        document.getElementById("settingsModal").classList.add("active");
+      }
+
+      function closeSettings() {
+        document.getElementById("settingsModal").classList.remove("active");
+      }
+
+      // Load Data
+      async function loadData() {
+        try {
+          // Load settings
+          const priceSnap = await db
+            .collection("settings")
+            .doc("votePrice")
+            .get();
+          votePrice = priceSnap.exists ? priceSnap.data().price : 200;
+          document.getElementById("votePrice").value = votePrice;
+
+          const statusSnap = await db
+            .collection("settings")
+            .doc("status")
+            .get();
+          votingOpen = statusSnap.exists
+            ? statusSnap.data().votingOpen !== false
+            : true;
+          voteCountVisible = statusSnap.exists
+            ? statusSnap.data().voteCountVisible !== false
+            : true;
+          document.getElementById("votingOpen").checked = votingOpen;
+          document.getElementById("voteCountVisible").checked =
+            voteCountVisible;
+          updateVotingStatus();
+          updateVoteCountVisibilityStatus();
+
+          // Load categories
+          const categoriesSnap = await db
+            .collection("categories")
+            .orderBy("order")
+            .get();
+          categories = [];
+          categoriesSnap.forEach((doc) => {
+            categories.push({ id: doc.id, ...doc.data() });
+          });
+
+          // Load candidates
+          const candidatesSnap = await db.collection("candidates").get();
+          candidates = [];
+          candidatesSnap.forEach((doc) => {
+            candidates.push({ id: doc.id, ...doc.data() });
+          });
+
+          await Promise.all([loadRecentTransactions(), loadRevenueData()]);
+
+          // Update UI
+          updateDashboard();
+          updateCategorySelects();
+          renderCategoriesList();
+          renderCandidatesTable();
+          updateCategoryOrderDefault();
+        } catch (error) {
+          console.error("Error loading data:", error);
+          showToast("Failed to load data", "error");
+        }
+      }
+
+      async function loadRevenueData() {
+        try {
+          const snap = await db
+            .collection("vote_transactions")
+            .where("status", "==", "success")
+            .get();
+
+          successfulRevenueKobo = snap.docs.reduce(
+            (sum, doc) => sum + Number(doc.data().amountKobo || 0),
+            0,
+          );
+        } catch (error) {
+          console.error("Error loading revenue data:", error);
+          successfulRevenueKobo = 0;
+        }
+      }
+
+      async function loadRecentTransactions() {
+        const tbody = document.getElementById("transactionsTable");
+        if (!tbody) return;
+
+        try {
+          const snap = await db
+            .collection("vote_transactions")
+            .orderBy("createdAt", "desc")
+            .limit(15)
+            .get();
+
+          if (snap.empty) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="6" class="text-center text-text-muted">No transactions yet</td>
+              </tr>
+            `;
+            return;
+          }
+
+          tbody.innerHTML = snap.docs
+            .map((doc) => {
+              const tx = doc.data();
+              const createdAt = tx.createdAt?.toDate
+                ? tx.createdAt.toDate().toLocaleString()
+                : "-";
+              const amountNaira = Number(tx.amountKobo || 0) / 100;
+              return `
+                <tr>
+                  <td>${createdAt}</td>
+                  <td>${tx.reference || doc.id}</td>
+                  <td>${tx.candidateName || tx.candidateId || "-"}</td>
+                  <td>${tx.votes || 0}</td>
+                  <td>₦${amountNaira.toLocaleString()}</td>
+                  <td>${tx.status || "-"}</td>
+                </tr>
+              `;
+            })
+            .join("");
+        } catch (error) {
+          console.error("Error loading transactions:", error);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-text-muted">Unable to load transactions</td>
+            </tr>
+          `;
+        }
+      }
+
+      function updateDashboard() {
+        const totalVotes = candidates.reduce(
+          (sum, c) => sum + (c.votes || 0),
+          0,
+        );
+        const totalRevenue = successfulRevenueKobo / 100;
+
+        document.getElementById("totalVotes").textContent =
+          totalVotes.toLocaleString();
+        document.getElementById("totalCategories").textContent =
+          categories.length;
+        document.getElementById("totalCandidates").textContent =
+          candidates.length;
+        document.getElementById("totalRevenue").textContent =
+          `₦${totalRevenue.toLocaleString()}`;
+
+        renderDashboardCharts();
+      }
+
+      function updateCategorySelects() {
+        const categorySelect = document.getElementById("candidateCategory");
+        const filterSelect = document.getElementById("filterCategory");
+
+        // Build options more efficiently
+        let categoryOptions = '<option value="">Select a category</option>';
+        let filterOptions = '<option value="">All Categories</option>';
+
+        categories.forEach((cat) => {
+          const option = `<option value="${cat.id}">${cat.name}</option>`;
+          categoryOptions += option;
+          filterOptions += option;
+        });
+
+        // Set innerHTML once per select element
+        categorySelect.innerHTML = categoryOptions;
+        filterSelect.innerHTML = filterOptions;
+      }
+
+      function renderDashboardCharts() {
+        // Top candidates bar chart
+        const topCandidates = [...candidates]
+          .sort((a, b) => (b.votes || 0) - (a.votes || 0))
+          .slice(0, 5);
+        const topChart = echarts.init(
+          document.getElementById("topCandidatesChart"),
+        );
+        topChart.setOption({
+          backgroundColor: "transparent",
+          tooltip: { trigger: "axis" },
+          xAxis: {
+            type: "category",
+            data: topCandidates.map((c) => c.name),
+            axisLabel: { color: "#0052A3" },
+          },
+          yAxis: { axisLabel: { color: "#0052A3" } },
+          series: [
+            {
+              type: "bar",
+              data: topCandidates.map((c) => c.votes || 0),
+              itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: "#0066CC" },
+                  { offset: 1, color: "#004D99" },
+                ]),
+              },
+            },
+          ],
+        });
+      }
+
+      function renderResultsCharts() {
+        // Category charts
+        const container = document.getElementById("categoryResultsContainer");
+        container.innerHTML = "";
+
+        categories.forEach((cat, index) => {
+          const catCandidates = candidates.filter(
+            (c) => c.categoryId === cat.id,
+          );
+          const chartId = `categoryChart-${cat.id}`;
+
+          const div = document.createElement("div");
+          div.className = "stat-card";
+          div.innerHTML = `
+          <h3 class="text-xl font-bold mb-4">${cat.name}</h3>
+          <div id="${chartId}" style="height: 300px;"></div>
+        `;
+          container.appendChild(div);
+
+          const chart = echarts.init(document.getElementById(chartId));
+          chart.setOption({
+            backgroundColor: "transparent",
+            tooltip: { trigger: "axis" },
+            xAxis: {
+              type: "category",
+              data: catCandidates.map((c) => c.name),
+              axisLabel: { color: "#0052A3", interval: 0, rotate: 45 },
+            },
+            yAxis: { axisLabel: { color: "#0052A3" } },
+            series: [
+              {
+                type: "bar",
+                data: catCandidates.map((c) => c.votes || 0),
+                itemStyle: { color: "#0066CC" },
+              },
+            ],
+            grid: { bottom: 100 },
+          });
+        });
+      }
+
+      function renderCategoriesList() {
+        const list = document.getElementById("categoriesList");
+        list.innerHTML = "";
+
+        categories.forEach((cat) => {
+          const div = document.createElement("div");
+          div.className = "stat-card flex justify-between items-center";
+          div.innerHTML = `
+          <div>
+            <p class="font-bold">${cat.name}</p>
+            <p class="text-xs text-text-muted">Order: ${cat.order}</p>
+          </div>
+          <button onclick="deleteCategory('${cat.id}')" class="btn-danger">Delete</button>
+        `;
+          list.appendChild(div);
+        });
+      }
+
+      function getNextCategoryOrder() {
+        if (!categories.length) {
+          return 1;
+        }
+
+        const maxOrder = categories.reduce(
+          (max, category) => Math.max(max, Number(category.order) || 0),
+          0,
+        );
+
+        return maxOrder + 1;
+      }
+
+      function updateCategoryOrderDefault() {
+        const categoryOrderInput = document.getElementById("categoryOrder");
+        if (!categoryOrderInput) return;
+        categoryOrderInput.value = getNextCategoryOrder();
+      }
+
+      function getCandidateImageURL(photoURL) {
+        if (!photoURL) {
+          return "https://via.placeholder.com/50";
+        }
+
+        // Admin page lives in /Admin/, while candidate images are stored in the root IMG/ folder.
+        // Use a parent-directory-relative path when the image path is relative to site root.
+        if (photoURL.startsWith("IMG/")) {
+          return `../${photoURL}`;
+        }
+
+        return photoURL;
+      }
+
+      function renderCandidatesTable() {
+        const table = document.getElementById("candidatesTable");
+        const selectedCategory =
+          document.getElementById("filterCategory").value;
+
+        let filtered = candidates;
+        if (selectedCategory) {
+          filtered = candidates.filter(
+            (c) => c.categoryId === selectedCategory,
+          );
+        }
+
+        table.innerHTML = filtered
+          .map(
+            (c) => `
+        <tr>
+          <td><img src="${getCandidateImageURL(c.photoURL)}" alt="${c.name}" style="width: 40px; height: 40px; border-radius: 0.5rem; object-fit: cover;"></td>
+          <td>${c.name}</td>
+          <td>${c.categoryName || "N/A"}</td>
+          <td id="voteCount_${c.id}">${c.votes || 0}</td>
+          <td style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+            <button onclick="openEditVotes('${c.id}', '${c.name.replace(/'/g, "\'")}', ${c.votes || 0})"
+              style="background:linear-gradient(135deg,#0066cc,#0052a3);color:#fff;padding:0.4rem 0.8rem;border:none;border-radius:0.5rem;font-weight:600;font-size:0.8rem;cursor:pointer;">
+              <i class="ri-edit-line"></i> Edit Votes
+            </button>
+            <button onclick="deleteCandidate('${c.id}')" class="btn-danger">Delete</button>
+          </td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+      // Form Handlers
+      categoryForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+          const categoryName = document
+            .getElementById("categoryName")
+            .value.trim();
+          const categoryOrderValue = parseInt(
+            document.getElementById("categoryOrder").value,
+            10,
+          );
+
+          if (!Number.isFinite(categoryOrderValue) || categoryOrderValue < 1) {
+            showToast(
+              "Please enter a valid category order (1 or higher).",
+              "error",
+            );
+            return;
+          }
+
+          const categoryExists = categories.some(
+            (category) =>
+              category.name?.trim().toLowerCase() ===
+              categoryName.toLowerCase(),
+          );
+
+          if (categoryExists) {
+            showToast("That category already exists.", "error");
+            return;
+          }
+
+          const duplicateOrderExists = categories.some(
+            (category) => Number(category.order) === categoryOrderValue,
+          );
+
+          if (duplicateOrderExists) {
+            showToast(
+              `Order ${categoryOrderValue} is already used. Try ${getNextCategoryOrder()}.`,
+              "error",
+            );
+            return;
+          }
+
+          await db.collection("categories").add({
+            name: categoryName,
+            order: categoryOrderValue,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          categoryForm.reset();
+          updateCategoryOrderDefault();
+          showToast("Category added successfully!");
+          loadData();
+        } catch (error) {
+          console.error("Error adding category:", error);
+          showToast("Failed to add category", "error");
+        }
+      });
+
+      // Auto-fill photo path from candidate name or extension change
+      function updatePhotoPath() {
+        const name = document.getElementById("candidateName").value.trim();
+        const ext = document.getElementById("photoExtension").value;
+        const photoInput = document.getElementById("candidatePhoto");
+        if (name) {
+          photoInput.value = `IMG/${formatCandidateFileName(name)}.${ext}`;
+        } else {
+          photoInput.value = "";
+        }
+      }
+
+      document
+        .getElementById("candidateName")
+        .addEventListener("input", updatePhotoPath);
+      document
+        .getElementById("photoExtension")
+        .addEventListener("change", updatePhotoPath);
+
+      candidateForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const categoryId = document.getElementById("candidateCategory").value;
+        const category = categories.find((c) => c.id === categoryId);
+        const candidateName = document
+          .getElementById("candidateName")
+          .value.trim();
+        const photoURL = document.getElementById("candidatePhoto").value.trim();
+
+        if (!categoryId || !category) {
+          showToast("Please select a valid category.", "error");
+          return;
+        }
+
+        if (!photoURL) {
+          showToast("Please enter a valid candidate photo path.", "error");
+          return;
+        }
+
+        const duplicateCandidate = candidates.some(
+          (candidate) =>
+            candidate.categoryId === categoryId &&
+            candidate.name?.trim().toLowerCase() ===
+              candidateName.toLowerCase(),
+        );
+
+        if (duplicateCandidate) {
+          showToast("That candidate already exists in this category.", "error");
+          return;
+        }
+
+        try {
+          await db.collection("candidates").add({
+            name: candidateName,
+            photoURL,
+            categoryId: categoryId,
+            categoryName: category.name,
+            votes: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          candidateForm.reset();
+          showToast("Candidate added successfully!");
+          loadData();
+        } catch (error) {
+          console.error("Error adding candidate:", error);
+          showToast("Failed to add candidate", "error");
+        }
+      });
+
+      settingsForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+          const newPrice = parseInt(document.getElementById("votePrice").value);
+          const newStatus = document.getElementById("votingOpen").checked;
+          const newVoteCountVisible =
+            document.getElementById("voteCountVisible").checked;
+
+          await db
+            .collection("settings")
+            .doc("votePrice")
+            .set({ price: newPrice });
+          await db.collection("settings").doc("status").set(
+            {
+              votingOpen: newStatus,
+              voteCountVisible: newVoteCountVisible,
+            },
+            { merge: true },
+          );
+
+          votePrice = newPrice;
+          votingOpen = newStatus;
+          voteCountVisible = newVoteCountVisible;
+          updateVotingStatus();
+          updateVoteCountVisibilityStatus();
+          closeSettings();
+          showToast("Settings updated successfully!");
+        } catch (error) {
+          console.error("Error saving settings:", error);
+          showToast("Failed to save settings", "error");
+        }
+      });
+
+      function updateVotingStatus() {
+        const statusEl = document.getElementById("votingStatus");
+        statusEl.textContent = votingOpen
+          ? "Voting is OPEN"
+          : "Voting is CLOSED";
+        statusEl.style.color = votingOpen ? "#00C9A7" : "#FF6B35";
+      }
+
+      function updateVoteCountVisibilityStatus() {
+        const statusEl = document.getElementById("voteCountVisibilityStatus");
+        statusEl.textContent = voteCountVisible
+          ? "Vote counts are VISIBLE"
+          : "Vote counts are HIDDEN";
+        statusEl.style.color = voteCountVisible ? "#00C9A7" : "#FF6B35";
+      }
+
+      document.getElementById("votingOpen").addEventListener("change", () => {
+        votingOpen = document.getElementById("votingOpen").checked;
+        updateVotingStatus();
+      });
+
+      document
+        .getElementById("voteCountVisible")
+        .addEventListener("change", () => {
+          voteCountVisible =
+            document.getElementById("voteCountVisible").checked;
+          updateVoteCountVisibilityStatus();
+        });
+
+      document
+        .getElementById("filterCategory")
+        .addEventListener("change", renderCandidatesTable);
+
+      // Delete functions
+      async function deleteCategory(id) {
+        if (!confirm("Delete this category?")) return;
+
+        try {
+          await db.collection("categories").doc(id).delete();
+          showToast("Category deleted");
+          loadData();
+        } catch (error) {
+          console.error("Error deleting category:", error);
+          showToast("Failed to delete category", "error");
+        }
+      }
+
+      async function deleteCandidate(id) {
+        if (!confirm("Delete this candidate?")) return;
+
+        try {
+          await db.collection("candidates").doc(id).delete();
+          showToast("Candidate deleted");
+          loadData();
+        } catch (error) {
+          console.error("Error deleting candidate:", error);
+          showToast("Failed to delete candidate", "error");
+        }
+      }
+
+      // Real-time updates
+      function setupRealTimeListeners() {
+        db.collection("candidates").onSnapshot((snap) => {
+          candidates = [];
+          snap.forEach((doc) => {
+            candidates.push({ id: doc.id, ...doc.data() });
+          });
+          updateDashboard();
+          renderCandidatesTable();
+        });
+
+        db.collection("categories").onSnapshot((snap) => {
+          categories = [];
+          snap.forEach((doc) => {
+            categories.push({ id: doc.id, ...doc.data() });
+          });
+          updateCategorySelects();
+          renderCategoriesList();
+          updateDashboard();
+          updateCategoryOrderDefault();
+        });
+
+        db.collection("vote_transactions")
+          .orderBy("createdAt", "desc")
+          .limit(15)
+          .onSnapshot(async () => {
+            await Promise.all([loadRecentTransactions(), loadRevenueData()]);
+            updateDashboard();
+          });
+      }
+
+      // Logout
+      function logout() {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadData();
+        updateCategoryOrderDefault();
+        setupRealTimeListeners();
+      });
+      // Edit Votes
+      let editVotesCandidateId = null;
+
+      function openEditVotes(candidateId, candidateName, currentVotes) {
+        editVotesCandidateId = candidateId;
+        document.getElementById("editVotesName").textContent = candidateName;
+        document.getElementById("editVotesInput").value = currentVotes;
+        document.getElementById("editVotesModal").classList.add("active");
+      }
+
+      function closeEditVotes() {
+        editVotesCandidateId = null;
+        document.getElementById("editVotesModal").classList.remove("active");
+      }
+
+      async function saveEditVotes() {
+        if (!editVotesCandidateId) return;
+
+        const newVotes = parseInt(document.getElementById("editVotesInput").value);
+        if (isNaN(newVotes) || newVotes < 0) {
+          showToast("Please enter a valid vote count (0 or more)", "error");
+          return;
+        }
+
+        try {
+          await db.collection("candidates").doc(editVotesCandidateId).update({
+            votes: newVotes,
+          });
+
+          // Update local state
+          const idx = candidates.findIndex((c) => c.id === editVotesCandidateId);
+          if (idx !== -1) candidates[idx].votes = newVotes;
+
+          // Update cell directly without full re-render
+          const cell = document.getElementById("voteCount_" + editVotesCandidateId);
+          if (cell) cell.textContent = newVotes;
+
+          updateDashboard();
+          closeEditVotes();
+          showToast("Votes updated successfully!");
+        } catch (error) {
+          console.error("Error updating votes:", error);
+          showToast("Failed to update votes", "error");
+        }
+      }
+
+
+    </script>
+  </body>
+</html>

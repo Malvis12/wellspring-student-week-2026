@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wellspring Student Week 2026 - Voting Platform</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0066CC",
+              secondary: "#0052A3",
+              accent: "#004D99",
+              deep: "#F8F9FA",
+              surface: "#FFFFFF",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+
+    <style>
+      :root {
+        --primary: #0066cc;
+        --secondary: #0052a3;
+        --accent: #004d99;
+        --bg-light: #f8f9fa;
+        --text-main: #1a1a1a;
+        --text-muted: #666666;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Navbar styles */
+      nav {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 102, 204, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      nav.scrolled {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .navbar-mobile-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: var(--primary);
+        cursor: pointer;
+        z-index: 1002;
+        transition: color 0.2s;
+      }
+
+      @media (max-width: 900px) {
+        .navbar-mobile-toggle {
+          display: block;
+        }
+        .navbar-desktop {
+          display: none !important;
+        }
+      }
+
+      .navbar-mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.98);
+        z-index: 1001;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        animation: fadeIn 0.3s;
+      }
+      .navbar-mobile-menu.active {
+        display: flex;
+      }
+      .navbar-mobile-menu a,
+      .navbar-mobile-menu button {
+        font-size: 1.25rem;
+        color: var(--primary);
+        background: none;
+        border: none;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+      .navbar-mobile-menu a:hover,
+      .navbar-mobile-menu button:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      .navbar-mobile-menu .close-mobile-menu {
+        position: absolute;
+        top: 1.5rem;
+        right: 2rem;
+        font-size: 2.5rem;
+        color: var(--primary);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Hero section */
+      .hero-section {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle at 20% 30%,
+            rgba(0, 102, 204, 0.2) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(0, 82, 163, 0.2) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(0, 66, 204, 0.9) 0%,
+            transparent 100%
+          );
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        max-width: 800px;
+        padding: 2rem;
+      }
+
+      .hero-content h1 {
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        color: #ffffff;
+        margin-bottom: 1rem;
+        animation: slideInDown 0.8s ease-out;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-content .subtitle {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 2rem;
+        animation: slideInUp 0.8s ease-out 0.2s both;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      @keyframes slideInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes bounce-in {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Button styles */
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+        transition:
+          box-shadow 0.25s,
+          transform 0.18s,
+          background 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary:hover,
+      .btn-primary:focus-visible {
+        transform: scale(1.04) translateY(-2px);
+        box-shadow: 0 8px 32px rgba(0, 102, 204, 0.18);
+        background: linear-gradient(135deg, var(--secondary), var(--accent));
+      }
+
+      .btn-primary:active {
+        transform: scale(0.98) translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+      }
+
+      .btn-primary:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        border: 2px solid #fff;
+        cursor: pointer;
+        transition:
+          box-shadow 0.25s,
+          background 0.3s,
+          color 0.3s,
+          transform 0.18s;
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-secondary:hover,
+      .btn-secondary:focus-visible {
+        background: #fff;
+        color: var(--primary);
+        transform: scale(1.04) translateY(-2px);
+        box-shadow: 0 8px 32px rgba(0, 102, 204, 0.13);
+      }
+
+      .btn-secondary:active {
+        transform: scale(0.98) translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+      }
+
+      .btn-secondary:focus {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* Candidate card */
+      .candidate-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        padding: 2rem 1.5rem;
+        border: 2px solid transparent;
+        transition:
+          box-shadow 0.3s,
+          transform 0.3s,
+          border 0.3s;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+        animation: cardFadeIn 0.7s cubic-bezier(0.23, 1.02, 0.32, 1) both;
+        will-change: transform, box-shadow;
+        margin-bottom: 2.5rem;
+      }
+
+      @keyframes cardFadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(40px) scale(0.98);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .candidate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 1.5rem;
+        padding: 2px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .candidate-card:hover::before {
+        opacity: 1;
+      }
+
+      .candidate-card:hover {
+        transform: translateY(-8px) scale(1.025);
+        box-shadow: 0 12px 32px rgba(0, 102, 204, 0.13);
+      }
+
+      .category-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .vote-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary);
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin: 1rem 0;
+      }
+
+      /* How it works */
+      .steps-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .step-card {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(0, 102, 204, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 102, 204, 0.05);
+      }
+
+      .step-card:hover {
+        border-color: rgba(0, 102, 204, 0.6);
+        transform: translateY(-5px);
+      }
+
+      .step-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: #ffffff;
+        border: 1px solid rgba(0, 102, 204, 0.2);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        position: relative;
+        animation: bounce-in 0.3s ease;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .modal-close:hover {
+        color: var(--secondary);
+      }
+
+      .modal-close:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+      }
+
+      /* Animations */
+      .fade-in {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Utilities */
+      .container-wide {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .section-title {
+        font-size: clamp(2.25rem, 5vw, 3rem);
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 0.5em;
+        color: var(--primary);
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 1.15rem;
+        margin-bottom: 2.5em;
+        font-weight: 500;
+        line-height: 1.5;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        color: var(--primary);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.4em;
+        line-height: 1.15;
+      }
+      h1 {
+        font-size: clamp(2.5rem, 7vw, 4rem);
+        font-weight: 800;
+      }
+      h2 {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+      }
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+      p,
+      li,
+      label,
+      input,
+      button {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-size: 1rem;
+        color: var(--text-main);
+        line-height: 1.6;
+      }
+      .category-badge {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .vote-count {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .offline-banner {
+        background: #ff9800;
+        color: #ffffff;
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        display: none;
+        position: fixed;
+        top: 80px;
+        width: 100%;
+        z-index: 100;
+        animation: slideInDown 0.3s ease;
+      }
+
+      .offline-banner.active {
+        display: block;
+      }
+
+      .skeleton {
+        background: linear-gradient(90deg, #e0e7ff, #c7d2fe, #e0e7ff);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+      }
+
+      @keyframes skeleton-loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        left: auto;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        background: var(--primary);
+        color: white;
+        animation: slideInRight 0.3s ease;
+        z-index: 1001;
+        max-width: 90%;
+        word-wrap: break-word;
+      }
+
+      @media (max-width: 640px) {
+        .toast {
+          right: 1rem;
+          left: 1rem;
+          bottom: 1rem;
+          max-width: calc(100% - 2rem);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Input field styling */
+      #votesInput {
+        background-color: #ffffff;
+        color: #1a1a1a;
+      }
+
+      #votesInput:focus {
+        outline: none;
+        border: 2px solid var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+      }
+
+      #votesInput::placeholder {
+        color: #999999;
+      }
+
+      /* Additional focus states for better accessibility */
+      a:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      button:focus {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+
+      /* Mobile responsiveness improvements */
+      @media (max-width: 768px) {
+        .modal-content {
+          width: 95%;
+          padding: 1.5rem;
+        }
+
+        .hero-content {
+          padding: 1rem;
+        }
+
+        .step-card {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-deep text-text-main">
+    <!-- Offline Banner -->
+    <div class="offline-banner" id="offlineBanner">
+      <i class="ri-wifi-off-line" style="margin-right: 0.5rem"></i> You appear
+      to be offline. Reconnecting...
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50" id="navbar">
+      <div class="container-wide">
+        <div class="flex justify-between items-center h-20">
+          <div class="flex items-center gap-3">
+            <div>
+              <img
+                src="WELSU LOGO.webp"
+                alt="Wellspring University Logo"
+                style="
+                  height: 2.5rem;
+                  width: auto;
+                  display: block;
+                  border-radius: 0.5rem;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                "
+              />
+            </div>
+            <span
+              style="
+                font-size: 0.75rem;
+                padding: 0.25rem 0.75rem;
+                background-color: #0066cc;
+                color: white;
+                border-radius: 9999px;
+                font-weight: 600;
+              "
+            >
+              Student Week 2026
+            </span>
+          </div>
+          <div class="navbar-desktop flex items-center gap-8">
+            <a href="#categories">Categories</a>
+            <a href="#how-it-works">How It Works</a>
+            <button class="btn-primary ml-4" onclick="scrollToVote()">
+              <i class="ri-vote-line"></i> Start Voting
+            </button>
+          </div>
+          <button
+            class="navbar-mobile-toggle"
+            id="mobileMenuBtn"
+            aria-label="Open menu"
+          >
+            <i class="ri-menu-line"></i>
+          </button>
+        </div>
+      </div>
+      <div class="navbar-mobile-menu" id="navbarMobileMenu">
+        <button
+          class="close-mobile-menu"
+          id="closeMobileMenu"
+          aria-label="Close menu"
+        >
+          &times;
+        </button>
+        <a href="#categories" onclick="closeMobileMenu()">Categories</a>
+        <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+        <button
+          class="btn-primary"
+          style="width: 80%"
+          onclick="
+            scrollToVote();
+            closeMobileMenu();
+          "
+        >
+          <i class="ri-vote-line"></i> Start Voting
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-content">
+        <h1>Wellspring Student Week 2026</h1>
+        <p class="subtitle">
+          Vote for your favourites. Every vote counts. Pay. Vote. Celebrate.
+        </p>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+          "
+          class="sm:flex-row"
+        >
+          <button class="btn-primary" onclick="scrollToVote()">
+            <i class="ri-arrow-down-line"></i> Start Voting
+          </button>
+          <button class="btn-secondary" onclick="scrollToCategories()">
+            <i class="ri-layout-grid-line"></i> View Categories
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Navigation -->
+    <div
+      id="categories"
+      style="
+        background-color: #ffffff;
+        z-index: 40;
+        border-bottom: 1px solid rgba(0, 102, 204, 0.3);
+        padding: 1rem 0;
+      "
+    >
+      <div class="container-wide">
+        <div style="max-width: 350px; margin: 0 auto">
+          <select
+            id="categoriesDropdown"
+            style="
+              width: 100%;
+              padding: 0.75rem 1rem;
+              border-radius: 9999px;
+              border: 1.5px solid #0066cc;
+              font-weight: 800;
+              background: #fff;
+              color: #0066cc;
+              font-size: 1.15rem;
+              outline: none;
+              transition: border 0.2s;
+              letter-spacing: 0.01em;
+              font-family:
+                &quot;Inter&quot;, &quot;Segoe UI&quot;, Arial, sans-serif;
+            "
+          >
+            <option value="all">All Categories</option>
+            <!-- Categories will be loaded here -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Candidates Section -->
+    <main style="background-color: #f8f9fa; padding: 5rem 0" id="candidates">
+      <div class="container-wide">
+        <h2 class="section-title">Cast Your Vote</h2>
+        <p class="section-subtitle">
+          Support your favourite candidates and celebrate Wellspring Student
+          Week
+        </p>
+
+        <div id="categoriesContainer">
+          <!-- Categories and candidates will be loaded here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- How It Works -->
+    <section
+      style="background-color: #ffffff; padding: 5rem 0"
+      id="how-it-works"
+    >
+      <div class="container-wide">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+          Simple, secure, and transparent voting process
+        </p>
+
+        <div class="steps-container">
+          <div class="step-card">
+            <div style="font-size: 2.25rem; margin-bottom: 1rem">🎯</div>
+            <div class="step-number">1</div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+              "
+            >
+              Pick Your Favourite
+            </h3>
+            <p style="color: #666666">
+              Browse categories and choose who to support
+            </p>
+          </div>
+          <div class="step-card">
+            <div style="font-size: 2.25rem; margin-bottom: 1rem">💳</div>
+            <div class="step-number">2</div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+              "
+            >
+              Vote Now
+            </h3>
+            <p style="color: #666666">Transfer per vote to our account (₦)</p>
+          </div>
+          <div class="step-card">
+            <div style="font-size: 2.25rem; margin-bottom: 1rem">🏆</div>
+            <div class="step-number">3</div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+              "
+            >
+              Watch Results
+            </h3>
+            <p style="color: #666666">See vote counts update in real time</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      style="
+        background-color: #f8f9fa;
+        border-top: 1px solid rgba(0, 102, 204, 0.2);
+        padding: 3rem 0;
+      "
+    >
+      <div class="container-wide">
+        <div style="text-align: center">
+          <h3
+            style="
+              font-size: 1.5rem;
+              font-weight: 700;
+              margin-bottom: 0.5rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5rem;
+            "
+          >
+            <img
+              src="WELSU LOGO.webp"
+              alt="Wellspring University Logo"
+              style="height: 1.75rem; width: auto; border-radius: 0.25rem"
+            />
+            Wellspring University
+          </h3>
+          <p style="color: #666666; margin-bottom: 1rem">
+            Vote. Celebrate. Crown Your Champions.
+          </p>
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              gap: 1rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <a
+              href="#"
+              style="
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 9999px;
+                background-color: #0066cc;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              title="Facebook"
+              onmouseover="this.style.backgroundColor = '#0052A3'"
+              onmouseout="this.style.backgroundColor = '#0066CC'"
+            >
+              <i class="ri-facebook-fill"></i>
+            </a>
+            <a
+              href="#"
+              style="
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 9999px;
+                background-color: #0066cc;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              title="Twitter"
+              onmouseover="this.style.backgroundColor = '#0052A3'"
+              onmouseout="this.style.backgroundColor = '#0066CC'"
+            >
+              <i class="ri-twitter-fill"></i>
+            </a>
+            <a
+              href="#"
+              style="
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 9999px;
+                background-color: #0066cc;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              title="Instagram"
+              onmouseover="this.style.backgroundColor = '#0052A3'"
+              onmouseout="this.style.backgroundColor = '#0066CC'"
+            >
+              <i class="ri-instagram-fill"></i>
+            </a>
+          </div>
+          <p
+            style="
+              color: #666666;
+              font-size: 0.875rem;
+              border-top: 1px solid rgba(102, 102, 102, 0.2);
+              padding-top: 1.5rem;
+            "
+          >
+            © 2026 Wellspring University. Powered by Code Maverick.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Vote Modal -->
+    <div class="modal" id="voteModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeVoteModal()">×</button>
+        <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#0066cc;">Cast Your Vote</h2>
+
+        <div id="candidateInfo" style="margin-bottom:1.5rem">
+          <img id="modalCandidatePhoto" src="" alt=""
+            style="width:8rem;height:8rem;border-radius:0.75rem;object-fit:contain;margin:0 auto 1rem;background:#f2f5fb;display:block;" />
+          <p style="text-align:center;color:#666666;margin-bottom:0.5rem" id="modalCategory"></p>
+          <h3 id="modalCandidateName" style="font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:1rem;"></h3>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+
+          <div>
+            <label for="votesInput" style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.5rem;">How many votes?</label>
+            <input type="number" id="votesInput" min="1" max="50" value="1"
+              style="width:100%;padding:0.5rem 1rem;border-radius:0.5rem;background-color:#ffffff;border:1px solid rgba(0,102,204,0.5);color:#1a1a1a;font-size:1rem;" />
+          </div>
+
+          <div style="background-color:#ffffff;padding:0.75rem;border-radius:0.5rem;border:1px solid rgba(0,82,163,0.3);">
+            <p style="font-size:0.875rem;color:#666666;margin-bottom:0.25rem;">
+              Total to transfer: <span id="totalPrice" style="color:#0052a3;font-weight:700;">&#8358;0</span>
+            </p>
+          </div>
+
+          <div style="background:#f0f6ff;border:1.5px solid #0066cc;border-radius:0.75rem;padding:1rem;">
+            <p style="font-size:0.8rem;font-weight:700;color:#0052a3;margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.05em;">
+              <i class="ri-bank-line"></i> Transfer Payment Details
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+              <span style="font-size:0.875rem;color:#444;">Bank</span>
+              <span style="font-weight:700;color:#1a1a1a;">Palmpay</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+              <span style="font-size:0.875rem;color:#444;">Account Name</span>
+              <span style="font-weight:700;color:#1a1a1a;">Korede Temioluwa</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+              <span style="font-size:0.875rem;color:#444;">Account Number</span>
+              <span style="font-weight:800;color:#0066cc;font-size:1.1rem;letter-spacing:0.05em;">7047789547</span>
+            </div>
+            <button onclick="copyAccountNumber()" style="width:100%;padding:0.4rem;border-radius:0.5rem;background:#0066cc;color:#fff;font-size:0.85rem;font-weight:600;border:none;cursor:pointer;">
+              <i class="ri-file-copy-line"></i> Copy Account Number
+            </button>
+          </div>
+
+          <div style="background:#fffbea;border:1px solid #f5c518;border-radius:0.5rem;padding:0.75rem;">
+            <p style="font-size:0.8rem;color:#7a5c00;line-height:1.6;">
+              <strong>How to vote:</strong><br>
+              1. Copy the account number above<br>
+              2. Transfer exactly <strong id="instructionAmount">&#8358;0</strong> to the account<br>
+              3. Click the button below to open WhatsApp<br>
+              4. Send your proof of payment in the WhatsApp chat
+            </p>
+          </div>
+
+          <button onclick="sendToWhatsApp()" class="btn-primary" style="width:100%;background:#25D366;display:flex;align-items:center;justify-content:center;gap:0.5rem;border:none;cursor:pointer;">
+            <i class="ri-whatsapp-line"></i> I Have Sent the Money
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Thank You Modal -->
+    <div class="modal" id="thankYouModal">
+      <div class="modal-content" style="text-align: center">
+        <button class="modal-close" onclick="closeThankYouModal()">×</button>
+        <div style="font-size: 3rem; margin-bottom: 1rem; color: #004d99">
+          <i class="ri-checkbox-circle-fill"></i>
+        </div>
+        <h2
+          style="
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #0052a3;
+          "
+        >
+          Your vote counts! 🎉
+        </h2>
+        <p style="color: #666666; margin-bottom: 1.5rem">
+          Thank you for supporting Wellspring Student Week.
+        </p>
+        <button
+          class="btn-primary"
+          onclick="closeThankYouModal()"
+          style="width: 100%"
+        >
+          Back to Voting
+        </button>
+      </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="./env.js"></script>
+    <script src="./firebase-init.js"></script>
+
+
+    <!-- ECharts (for future use) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+
+    <script>
+      // State management
+      let categories = [];
+      let candidates = [];
+      let votePrice = 200;
+      let votingOpen = true;
+      let voteCountVisible = true;
+      let selectedCandidateId = null;
+      let selectedCandidateName = null;
+      let isOnline = navigator.onLine;
+
+      // DOM Elements
+      const voteModal = document.getElementById("voteModal");
+      const thankYouModal = document.getElementById("thankYouModal");
+      const categoriesContainer = document.getElementById("categoriesContainer");
+      const categoriesNav = document.getElementById("categoriesNav");
+      const offlineBanner = document.getElementById("offlineBanner");
+
+      // Mobile Navbar
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const navbarMobileMenu = document.getElementById("navbarMobileMenu");
+      const closeMobileMenuBtn = document.getElementById("closeMobileMenu");
+
+      function openMobileMenu() {
+        navbarMobileMenu.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+      function closeMobileMenu() {
+        navbarMobileMenu.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+      if (mobileMenuBtn && navbarMobileMenu && closeMobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", openMobileMenu);
+        closeMobileMenuBtn.addEventListener("click", closeMobileMenu);
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.style.background =
+          type === "error" ? "#FF6B35" : type === "info" ? "#00C9A7" : "#FFD700";
+        toast.style.color = type === "info" ? "white" : "#1A0A2E";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      // Offline detection
+      window.addEventListener("online", () => {
+        isOnline = true;
+        offlineBanner.classList.remove("active");
+        loadData();
+      });
+      window.addEventListener("offline", () => {
+        isOnline = false;
+        offlineBanner.classList.add("active");
+      });
+
+      // Navbar scroll effect
+      window.addEventListener("scroll", () => {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 100) {
+          navbar.classList.add("scrolled");
+        } else {
+          navbar.classList.remove("scrolled");
+        }
+      });
+
+      // Modal functions
+      function openVoteModal(candidateId, candidateName) {
+        selectedCandidateId = candidateId;
+        selectedCandidateName = candidateName;
+        const candidate = candidates.find((c) => c.id === candidateId);
+
+        document.getElementById("modalCandidatePhoto").src =
+          candidate.photoURL || "https://via.placeholder.com/200";
+        document.getElementById("modalCandidateName").textContent = candidateName;
+        document.getElementById("modalCategory").textContent = candidate.categoryName;
+        document.getElementById("votesInput").value = 1;
+        updatePricePreview();
+
+        voteModal.classList.add("active");
+      }
+
+      function closeVoteModal() {
+        voteModal.classList.remove("active");
+      }
+
+      function closeThankYouModal() {
+        thankYouModal.classList.remove("active");
+      }
+
+      function updatePricePreview() {
+        const votes = parseInt(document.getElementById("votesInput").value) || 1;
+        const total = votes * votePrice;
+        const formatted = "₦" + total.toLocaleString();
+        document.getElementById("totalPrice").textContent = formatted;
+        const instrEl = document.getElementById("instructionAmount");
+        if (instrEl) instrEl.textContent = formatted;
+      }
+
+      function copyAccountNumber() {
+        navigator.clipboard.writeText("7047789547").then(() => {
+          showToast("Account number copied!", "success");
+        }).catch(() => {
+          showToast("Copy failed — number is 7047789547", "info");
+        });
+      }
+
+      function sendToWhatsApp() {
+        const votes = parseInt(document.getElementById("votesInput").value) || 1;
+        const total = votes * votePrice;
+        const candidateName = selectedCandidateName || "Unknown";
+
+        const message =
+          `Hello! I just sent a transfer for my vote.
+
+` +
+          `Candidate: ${candidateName}
+` +
+          `Number of votes: ${votes}
+` +
+          `Amount sent: ₦${total.toLocaleString()}
+
+` +
+          `Please find my proof of payment attached.`;
+
+        const whatsappUrl =
+          "https://wa.me/2347047789547?text=" + encodeURIComponent(message);
+
+        window.open(whatsappUrl, "_blank");
+        closeVoteModal();
+        thankYouModal.classList.add("active");
+        setTimeout(() => closeThankYouModal(), 5000);
+      }
+
+      // Scroll helpers
+      function scrollToVote() {
+        document.getElementById("candidates").scrollIntoView({ behavior: "smooth" });
+      }
+      function scrollToCategories() {
+        document.getElementById("candidates").scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Load data from Firestore
+      async function loadData() {
+        if (!isOnline) {
+          showToast("You are offline. Please check your connection.", "error");
+          return;
+        }
+
+        try {
+          const statusSnap = await db.collection("settings").doc("status").get();
+          votingOpen = statusSnap.exists ? statusSnap.data().votingOpen !== false : true;
+          voteCountVisible = statusSnap.exists ? statusSnap.data().voteCountVisible !== false : true;
+
+          if (!votingOpen) {
+            categoriesContainer.innerHTML = `
+              <div class="text-center py-20 bg-surface rounded-xl border border-primary border-opacity-30">
+                <div class="text-5xl mb-4">🎉</div>
+                <h3 class="text-2xl font-bold mb-2">Voting is currently closed</h3>
+                <p class="text-text-muted">Check back soon for the next voting session!</p>
+              </div>`;
+            return;
+          }
+
+          const priceSnap = await db.collection("settings").doc("votePrice").get();
+          votePrice = priceSnap.exists ? priceSnap.data().price : 200;
+
+          const categoriesSnap = await db.collection("categories").orderBy("order").get();
+          categories = [];
+          categoriesSnap.forEach((doc) => categories.push({ id: doc.id, ...doc.data() }));
+
+          const candidatesSnap = await db.collection("candidates").get();
+          candidates = [];
+          candidatesSnap.forEach((doc) => candidates.push({ id: doc.id, ...doc.data() }));
+
+          renderCategories();
+          setupCategoryNavigation();
+        } catch (error) {
+          console.error("Error loading data:", error);
+          showToast("Failed to load voting data", "error");
+        }
+      }
+
+      function renderCategories(selectedCategoryId = "all") {
+        categoriesContainer.innerHTML = "";
+
+        let categoriesToRender = categories;
+        if (selectedCategoryId !== "all") {
+          categoriesToRender = categories.filter((cat) => cat.id === selectedCategoryId);
+        }
+
+        categoriesToRender.forEach((category) => {
+          const categorySection = document.createElement("div");
+          categorySection.id = `category-${category.id}`;
+          categorySection.className = "mb-16";
+
+          const categoryTitle = document.createElement("h3");
+          categoryTitle.className =
+            "text-3xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary";
+          categoryTitle.textContent = category.name;
+
+          const candidatesGrid = document.createElement("div");
+          candidatesGrid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+
+          const categoryCandidates = candidates.filter((c) => c.categoryId === category.id);
+
+          if (categoryCandidates.length === 0) {
+            candidatesGrid.innerHTML = '<p class="col-span-full text-center text-text-muted">No candidates yet</p>';
+          } else {
+            categoryCandidates.forEach((candidate) => {
+              const card = document.createElement("div");
+              card.className = "candidate-card";
+              card.dataset.candidateId = candidate.id;
+              const voteCountHtml = voteCountVisible
+                ? `<div class="vote-count"><i class="ri-ballot-line"></i> ${candidate.votes || 0} votes</div>`
+                : "";
+              card.innerHTML = `
+                <div class="category-badge">${candidate.categoryName}</div>
+                <img src="${candidate.photoURL || "https://via.placeholder.com/300"}" alt="${candidate.name}"
+                     class="w-full h-auto rounded-lg object-contain mb-4" style="max-height: 18rem;">
+                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">${candidate.name}</h4>
+                ${voteCountHtml}
+                <button class="btn-primary vote-button w-full mt-4" data-candidate-id="${candidate.id}" data-candidate-name="${candidate.name}">
+                  <i class="ri-vote-line"></i> Vote for ${candidate.name}
+                </button>`;
+              candidatesGrid.appendChild(card);
+            });
+          }
+
+          categorySection.appendChild(categoryTitle);
+          categorySection.appendChild(candidatesGrid);
+          categoriesContainer.appendChild(categorySection);
+        });
+      }
+
+      function setupCategoryNavigation() {
+        const dropdown = document.getElementById("categoriesDropdown");
+        if (!dropdown) return;
+        while (dropdown.options.length > 1) dropdown.remove(1);
+        categories.forEach((category) => {
+          const option = document.createElement("option");
+          option.value = category.id;
+          option.textContent = category.name;
+          dropdown.appendChild(option);
+        });
+        dropdown.onchange = function () {
+          renderCategories(dropdown.value);
+        };
+      }
+
+      function setupRealTimeListeners() {
+        db.collection("candidates").onSnapshot(
+          (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === "modified" || change.type === "added") {
+                const candidate = change.doc.data();
+                const voteCountEl = document.querySelector(
+                  `[data-candidate-id="${change.doc.id}"] .vote-count`
+                );
+                if (voteCountEl) {
+                  voteCountEl.innerHTML = `<i class="ri-ballot-line"></i> ${candidate.votes || 0} votes`;
+                }
+              }
+            });
+          },
+          (error) => console.error("[RealTimeListener] Error:", error)
+        );
+      }
+
+      function setupVoteFormListener() {
+        document.addEventListener("click", (e) => {
+          if (e.target.closest(".vote-button")) {
+            const button = e.target.closest(".vote-button");
+            openVoteModal(button.dataset.candidateId, button.dataset.candidateName);
+          }
+        });
+
+        const votesInput = document.getElementById("votesInput");
+        if (votesInput) {
+          votesInput.addEventListener("change", updatePricePreview);
+          votesInput.addEventListener("input", updatePricePreview);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        setupVoteFormListener();
+        setupRealTimeListeners();
+        await loadData();
+      });
+    </script>
+  </body>
+</html>

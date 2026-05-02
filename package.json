@@ -1,0 +1,20 @@
+{
+  "name": "welsu-voting-platform",
+  "private": true,
+  "scripts": {
+    "build:tailwind": "tailwindcss -c tailwind.config.js -i ./src/tailwind.input.css -o ./dist/tailwind.css --minify",
+    "watch:tailwind": "tailwindcss -c tailwind.config.js -i ./src/tailwind.input.css -o ./dist/tailwind.css --watch",
+    "build": "node scripts/generate-env.js",
+    "netlify-build": "npm run build"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "firebase-admin": "^12.7.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "firebase-tools": "^15.16.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.16"
+  }
+}

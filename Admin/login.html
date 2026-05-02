@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Wellspring Student Week 2026</title>
+    <link rel="icon" href="data:," />
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0066CC",
+              secondary: "#0052A3",
+              accent: "#004D99",
+              deep: "#F8F9FA",
+              surface: "#FFFFFF",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #0066cc, #0052a3);
+        color: #1a1a1a;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+      }
+
+      .login-container {
+        max-width: 450px;
+        width: 90%;
+        background: #ffffff;
+        border: 2px solid #0066cc;
+        border-radius: 1.5rem;
+        padding: 3rem 2rem;
+        box-shadow: 0 20px 60px rgba(0, 102, 204, 0.3);
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .login-header .logo {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .login-header h1 {
+        font-size: 2rem;
+        color: #0066cc;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+      }
+
+      .login-header p {
+        color: #666666;
+        font-size: 0.95rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 0.5rem;
+        color: #1a1a1a;
+        font-family: inherit;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #0066cc;
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 102, 204, 0.3);
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666666;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      .password-field {
+        position: relative;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+        accent-color: #0066cc;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        font-size: 0.95rem;
+        cursor: pointer;
+        color: #1a1a1a;
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #0066cc, #0052a3);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 102, 204, 0.4);
+        background: linear-gradient(135deg, #0052a3, #004d99);
+      }
+
+      .btn-login:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .error-message {
+        background: #ff6b6b;
+        color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: slideDown 0.3s ease;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .back-to-voting {
+        text-align: center;
+        margin-top: 2rem;
+        border-top: 1px solid rgba(0, 102, 204, 0.2);
+        padding-top: 2rem;
+      }
+
+      .back-to-voting a {
+        color: #0066cc;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+
+      .back-to-voting a:hover {
+        color: #0052a3;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background decoration -->
+    <div
+      style="position: fixed; inset: 0; overflow: hidden; pointer-events: none"
+    >
+      <div
+        style="
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(
+            circle,
+            rgba(255, 107, 53, 0.1) 0%,
+            transparent 70%
+          );
+          top: -100px;
+          right: -100px;
+          border-radius: 50%;
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          width: 250px;
+          height: 250px;
+          background: radial-gradient(
+            circle,
+            rgba(0, 201, 167, 0.05) 0%,
+            transparent 70%
+          );
+          bottom: -50px;
+          left: -50px;
+          border-radius: 50%;
+        "
+      ></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo">
+          <img
+            src="../WELSU LOGO.webp"
+            alt="Wellspring University Logo"
+            style="
+              height: 3rem;
+              width: auto;
+              display: block;
+              margin: 0 auto 1rem;
+              border-radius: 0.5rem;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            "
+          />
+        </div>
+        <h1>Admin Portal</h1>
+        <p>Wellspring Student Week 2026</p>
+      </div>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email"
+            ><i class="ri-mail-line mr-2"></i>Email Address</label
+          >
+          <input
+            type="email"
+            id="email"
+            required
+            placeholder="admin@gmail.com"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password"
+            ><i class="ri-lock-line mr-2"></i>Password</label
+          >
+          <div class="password-field">
+            <input
+              type="password"
+              id="password"
+              required
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button type="button" class="password-toggle" id="passwordToggle">
+              <i class="ri-eye-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="rememberMe" />
+          <label for="rememberMe">Remember me on this device</label>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <i class="ri-login-box-line"></i> Login to Dashboard
+        </button>
+      </form>
+
+      <div class="back-to-voting">
+        <p style="margin-bottom: 0.5rem; color: #c4b5e0">Back to voting?</p>
+        <a
+          href="/"
+          style="display: inline-flex; align-items: center; gap: 0.5rem"
+        >
+          <i class="ri-arrow-left-line"></i> Return to Voting Platform
+        </a>
+      </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="./firebase-init.js"></script>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const passwordToggle = document.getElementById("passwordToggle");
+      const rememberMeCheckbox = document.getElementById("rememberMe");
+      const errorMessage = document.getElementById("errorMessage");
+      const loginBtn = document.getElementById("loginBtn");
+
+      const DEFAULT_ADMIN_EMAIL = "admin@gmail.com";
+      let hasLoggedPermissionWarning = false;
+      let isManualLoginInProgress = false;
+
+      async function isAuthorizedAdmin(user) {
+        if (!user) return false;
+
+        if ((user.email || "").toLowerCase() === DEFAULT_ADMIN_EMAIL) {
+          return true;
+        }
+
+        try {
+          // Ensure auth token is ready before reading Firestore-protected docs.
+          await user.getIdToken(true);
+          const adminDoc = await db.collection("admins").doc(user.uid).get();
+          return adminDoc.exists;
+        } catch (error) {
+          if (error && error.code === "permission-denied") {
+            if (!hasLoggedPermissionWarning) {
+              hasLoggedPermissionWarning = true;
+              console.warn(
+                "Admin check was denied by Firestore rules. Ensure /admins/{uid} read is allowed for the signed-in user and rules are deployed.",
+              );
+            }
+            return false;
+          }
+
+          console.error("Error checking admin access:", error);
+          return false;
+        }
+      }
+
+      // Password toggle
+      passwordToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+        passwordToggle.innerHTML =
+          type === "password"
+            ? '<i class="ri-eye-line"></i>'
+            : '<i class="ri-eye-off-line"></i>';
+      });
+
+      // Show error message
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+        setTimeout(() => {
+          errorMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Handle login
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        isManualLoginInProgress = true;
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          showError("Please fill in all fields");
+          return;
+        }
+
+        // Disable button and show loading state
+        loginBtn.disabled = true;
+        const originalText = loginBtn.innerHTML;
+        loginBtn.innerHTML =
+          '<div class="loading-spinner"></div> Logging in...';
+
+        try {
+          // Sign in with Firebase Auth
+          const userCredential = await auth.signInWithEmailAndPassword(
+            email,
+            password,
+          );
+
+          // Give Firestore rules a fresh token context before access checks.
+          await userCredential.user.getIdToken(true);
+
+          const isAdmin = await isAuthorizedAdmin(userCredential.user);
+          if (!isAdmin) {
+            await auth.signOut();
+            showError("This account is not authorized for admin access.");
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalText;
+            isManualLoginInProgress = false;
+            return;
+          }
+
+          // Optionally store "remember me" preference
+          if (rememberMeCheckbox.checked) {
+            localStorage.setItem("rememberEmail", email);
+          }
+
+          // Redirect to dashboard
+          window.location.href = "dashboard.html";
+        } catch (error) {
+          isManualLoginInProgress = false;
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = originalText;
+
+          let errorMsg = "Login failed. Please try again.";
+
+          if (error.code === "auth/user-not-found") {
+            errorMsg = "No account found with this email address.";
+          } else if (error.code === "auth/wrong-password") {
+            errorMsg = "Incorrect password. Please try again.";
+          } else if (error.code === "auth/invalid-email") {
+            errorMsg = "Invalid email address.";
+          } else if (error.code === "auth/too-many-requests") {
+            errorMsg = "Too many failed attempts. Please try again later.";
+          } else if (error.code === "auth/user-disabled") {
+            errorMsg = "This account has been disabled.";
+          }
+
+          showError(errorMsg);
+          console.error("Login error:", error);
+        }
+      });
+
+      // Load remembered email if available
+      window.addEventListener("load", () => {
+        const rememberedEmail = localStorage.getItem("rememberEmail");
+        if (rememberedEmail) {
+          emailInput.value = rememberedEmail;
+          rememberMeCheckbox.checked = true;
+        }
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged(async (user) => {
+          if (isManualLoginInProgress) {
+            return;
+          }
+
+          if (!user) {
+            return;
+          }
+
+          const isAdmin = await isAuthorizedAdmin(user);
+          if (isAdmin) {
+            window.location.href = "dashboard.html";
+            return;
+          }
+
+          await auth.signOut();
+        });
+      });
+    </script>
+  </body>
+</html>
